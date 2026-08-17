@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SuperMart — Bill Generator | Q5</title>
+  <style>
+    :root {
+      --green:  #1b5e20;
+      --teal:   #00796b;
+      --light:  #f1f8e9;
+      --white:  #ffffff;
+      --red:    #c62828;
+      --gold:   #f9a825;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--light);
+      min-height: 100vh;
+      padding: 40px 16px;
+    }
+
+    .page-title { text-align:center; color: var(--green); font-size:1.6rem; font-weight:800; margin-bottom:4px; }
+    .page-sub   { text-align:center; color:#666; font-size:0.85rem; margin-bottom:28px; }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* ── Input Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--light);
+    }
+
+    .product-block {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .product-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
+    .input-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 0.78rem; color: #666; font-weight: 600; text-transform: uppercase; }
+    input[type="number"] {
+      padding: 10px 12px;
+      border: 1.5px solid #c8e6c9;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus { border-color: var(--teal); }
+
+    select {
+      padding: 10px 12px;
+      border: 1.5px solid #c8e6c9;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .btn-calc {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.88; }
+    .btn-reset {
+      display: block;
+      width: 100%;
+      padding: 11px;
+      background: #eee;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* ── Bill Receipt ── */
+    #bill {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    .receipt {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .receipt-header {
+      background: var(--green);
+      color: #fff;
+      text-align: center;
+      padding: 22px;
+    }
+    .receipt-header h2 { font-size: 1.4rem; letter-spacing: 3px; }
+    .receipt-header p  { font-size: 0.78rem; opacity: 0.8; margin-top: 4px; }
+
+    .receipt-body { padding: 20px; }
+
+    .bill-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .bill-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 10px; }
+    .bill-table th { background: #f5f5f5; color: #555; padding: 8px 10px; text-align: left; font-size: 0.78rem; text-transform: uppercase; }
+    .bill-table td { padding: 10px 10px; border-bottom: 1px solid #f0f0f0; color: #333; }
+    .bill-table tr:last-child td { border-bottom: none; }
+
+    .bill-summary { padding-top: 12px; border-top: 1px dashed #ddd; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 0.88rem;
+      color: #555;
+    }
+    .summary-row.discount { color: var(--red); font-weight: 600; }
+    .summary-row.total {
+      border-top: 2px solid var(--green);
+      margin-top: 8px;
+      padding-top: 10px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .discount-banner {
+      background: #fff8e1;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #795548;
+      margin: 14px 0;
+      text-align: center;
+    }
+    .no-discount-banner {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #2e7d32;
+      margin: 14px 0;
+      text-align: center;
+    }
+
+    .receipt-footer {
+      background: var(--light);
+      text-align: center;
+      padding: 14px;
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    @media (max-width: 700px) {
+      .wrapper { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="page-title">🛒 SuperMart — Billing System</h1>
+  <p class="page-sub">U21CS501 Web Technology — Assignment I, Q5</p>
+
+  <div class="wrapper">
+
+    <!-- INPUT PANEL -->
+    <div class="card">
+      <div class="card-title">Enter Product Details</div>
+
+      <!-- Product 1 -->
+      <div class="product-block">
+        <div class="product-name">🍎 Product 1</div>
+        <select id="name1">
+          <option value="Rice (1kg)">Rice (1 kg)</option>
+          <option value="Sugar (1kg)">Sugar (1 kg)</option>
+          <option value="Toor Dal (1kg)">Toor Dal (1 kg)</option>
+          <option value="Cooking Oil (1L)">Cooking Oil (1 L)</option>
+          <option value="Biscuits (Pack)">Biscuits (Pack)</option>
+        </select>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Quantity</label>
+            <input type="number" id="q1" value="2" min="1" max="100"/>
+          </div>
+          <div class="input-group">
+            <label>Unit Price (₹)</label>
+            <input type="number" id="p1" value="60" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-block">
+        <div class="product-name">🥛 Product 2</div>
+        <select id="name2">
+          <option value="Milk (1L)">Milk (1 L)</option>
+          <option value="Curd (500g)">Curd (500 g)</option>
+          <option value="Butter (100g)">Butter (100 g)</option>
+          <option value="Paneer (200g)">Paneer (200 g)</option>
+          <option value="Cheese Slice">Cheese Slice</option>
+        </select>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Quantity</label>
+            <input type="number" id="q2" value="3" min="1" max="100"/>
+          </div>
+          <div class="input-group">
+            <label>Unit Price (₹)</label>
+            <input type="number" id="p2" value="28" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-block">
+        <div class="product-name">🧴 Product 3</div>
+        <select id="name3">
+          <option value="Shampoo (200ml)">Shampoo (200 ml)</option>
+          <option value="Soap (100g)">Soap (100 g)</option>
+          <option value="Toothpaste">Toothpaste</option>
+          <option value="Detergent (1kg)">Detergent (1 kg)</option>
+          <option value="Dish Wash Bar">Dish Wash Bar</option>
+        </select>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Quantity</label>
+            <input type="number" id="q3" value="1" min="1" max="100"/>
+          </div>
+          <div class="input-group">
+            <label>Unit Price (₹)</label>
+            <input type="number" id="p3" value="180" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="generateBill()">🧾 Generate Bill</button>
+      <button class="btn-reset" onclick="resetBill()">Reset</button>
+    </div>
+
+    <!-- BILL RECEIPT -->
+    <div id="bill">
+      <div class="receipt">
+        <div class="receipt-header">
+          <h2>🛍 SUPERMART</h2>
+          <p>Your Trusted Neighbourhood Store · Coimbatore</p>
+        </div>
+        <div class="receipt-body">
+          <div class="bill-meta">
+            <span id="billDate"></span>
+            <span id="billNo"></span>
+          </div>
+
+          <table class="bill-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="billRows"></tbody>
+          </table>
+
+          <div id="discountBanner"></div>
+
+          <div class="bill-summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="sSubtotal"></span>
+            </div>
+            <div class="summary-row discount" id="discountRow" style="display:none">
+              <span>Discount (10%)</span>
+              <span id="sDiscount"></span>
+            </div>
+            <div class="summary-row">
+              <span>GST (5%)</span>
+              <span id="sGst"></span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Payable</span>
+              <span id="sTotal"></span>
+            </div>
+          </div>
+        </div>
+        <div class="receipt-footer">Thank you for shopping at SuperMart! 🙏 Visit again!</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /*
+     * ────────────────────────────────────────────────
+     *  Q5 — JavaScript: Supermarket Billing System
+     *  Demonstrates:
+     *    ✔ Variables & Data Types (let, const, Number, String)
+     *    ✔ Literals (numeric, string, template literals)
+     *    ✔ Operators (arithmetic: +, *, -, /; comparison: >)
+     *    ✔ Statements (if–else, for loop)
+     *    ✔ User-defined Functions
+     * ────────────────────────────────────────────────
+     */
+
+    // ── Constants (literal values) ─────────────────
+    const DISCOUNT_THRESHOLD = 2000; // Numeric literal
+    const DISCOUNT_RATE      = 0.10; // 10%
+    const GST_RATE           = 0.05; // 5%
+
+    // ── User-defined Function 1: getProductData ────
+    // Reads inputs and returns an array of product objects
+    function getProductData() {
+      // Array literal containing object literals
+      return [
+        {
+          name:  document.getElementById('name1').value, // String variable
+          qty:   Number(document.getElementById('q1').value),  // Number variable
+          price: Number(document.getElementById('p1').value)
+        },
+        {
+          name:  document.getElementById('name2').value,
+          qty:   Number(document.getElementById('q2').value),
+          price: Number(document.getElementById('p2').value)
+        },
+        {
+          name:  document.getElementById('name3').value,
+          qty:   Number(document.getElementById('q3').value),
+          price: Number(document.getElementById('p3').value)
+        }
+      ];
+    }
+
+    // ── User-defined Function 2: computeLineTotal ──
+    // Arithmetic operator: *
+    function computeLineTotal(qty, price) {
+      return qty * price;
+    }
+
+    // ── User-defined Function 3: computeSubtotal ──
+    // Iteration: for loop + += operator
+    function computeSubtotal(products) {
+      let subtotal = 0; // Numeric literal initialisation
+      for (let i = 0; i < products.length; i++) {
+        subtotal += computeLineTotal(products[i].qty, products[i].price);
+      }
+      return subtotal;
+    }
+
+    // ── User-defined Function 4: applyDiscount ────
+    // Selection: if–else; comparison operator >
+    function applyDiscount(subtotal) {
+      if (subtotal > DISCOUNT_THRESHOLD) {
+        // Arithmetic: * and -
+        let discountAmt = subtotal * DISCOUNT_RATE;
+        return discountAmt;
+      } else {
+        return 0; // Numeric literal
+      }
+    }
+
+    // ── User-defined Function 5: computeGST ───────
+    function computeGST(amountAfterDiscount) {
+      return amountAfterDiscount * GST_RATE;
+    }
+
+    // ── User-defined Function 6: formatCurrency ───
+    function formatCurrency(amount) {
+      // Template literal (string literal with expression)
+      return `₹ ${amount.toFixed(2)}`;
+    }
+
+    // ── User-defined Function 7: getBillNumber ────
+    function getBillNumber() {
+      // Arithmetic: Math.random + Math.floor
+      return `SM-${Math.floor(Math.random() * 90000) + 10000}`;
+    }
+
+    // ── MAIN: generateBill ────────────────────────
+    function generateBill() {
+      // Get product data using function
+      const products = getProductData();
+
+      // Validate
+      for (let i = 0; i < products.length; i++) {
+        if (products[i].qty <= 0 || products[i].price <= 0 || isNaN(products[i].qty) || isNaN(products[i].price)) {
+          alert('⚠️ Please enter valid quantity and price for all products.');
+          return;
+        }
+      }
+
+      // ── Calculations using functions ─────────────
+      const subtotal    = computeSubtotal(products);      // Function call
+      const discount    = applyDiscount(subtotal);        // Function call (if–else inside)
+      const afterDisc   = subtotal - discount;            // Arithmetic: -
+      const gst         = computeGST(afterDisc);         // Function call
+      const totalPayable = afterDisc + gst;              // Arithmetic: +
+
+      // ── Build bill table rows ────────────────────
+      let rowsHTML = '';
+      // Iteration: for loop
+      for (let i = 0; i < products.length; i++) {
+        const lineTotal = computeLineTotal(products[i].qty, products[i].price);
+        // Template literals
+        rowsHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${products[i].name}</td>
+            <td>${products[i].qty}</td>
+            <td>${formatCurrency(products[i].price)}</td>
+            <td><strong>${formatCurrency(lineTotal)}</strong></td>
+          </tr>
+        `;
+      }
+      document.getElementById('billRows').innerHTML = rowsHTML;
+
+      // ── Bill meta ────────────────────────────────
+      const now = new Date();
+      document.getElementById('billDate').textContent =
+        `Date: ${now.toLocaleDateString('en-IN')}  ${now.toLocaleTimeString('en-IN')}`;
+      document.getElementById('billNo').textContent = `Bill: ${getBillNumber()}`;
+
+      // ── Summary ──────────────────────────────────
+      document.getElementById('sSubtotal').textContent = formatCurrency(subtotal);
+      document.getElementById('sGst').textContent      = formatCurrency(gst);
+      document.getElementById('sTotal').textContent    = formatCurrency(totalPayable);
+
+      // Selection: if–else for discount display
+      if (discount > 0) {
+        document.getElementById('discountRow').style.display  = 'flex';
+        document.getElementById('sDiscount').textContent = `- ${formatCurrency(discount)}`;
+        document.getElementById('discountBanner').innerHTML =
+          `<div class="discount-banner">🎉 Congratulations! You saved <strong>${formatCurrency(discount)}</strong> with a 10% discount on orders above ₹2000!</div>`;
+      } else {
+        document.getElementById('discountRow').style.display  = 'none';
+        document.getElementById('discountBanner').innerHTML =
+          `<div class="no-discount-banner">💡 Shop for ₹${(DISCOUNT_THRESHOLD - subtotal + 1).toFixed(0)} more to unlock a 10% discount!</div>`;
+      }
+
+      // Show bill
+      const billEl = document.getElementById('bill');
+      billEl.style.display = 'block';
+      billEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Reset ────────────────────────────────────
+    function resetBill() {
+      document.getElementById('bill').style.display = 'none';
+    }
+  </script>
+
+  <footer style="text-align:center;padding:32px 16px 16px;font-size:0.85rem;color:#718096;margin-top:auto;">
+    <p>U21CS501 Web Technology — Assignment I &nbsp;|&nbsp; KPR Institute of Engineering and Technology &nbsp;|&nbsp; 2026–27</p>
+    <p style="margin-top:6px;font-weight:600;color:var(--green);">Submitted by: Sathya R V &nbsp;|&nbsp; Roll No: 24CS192</p>
+  </footer>
+
+</body>
+</html>
