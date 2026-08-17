@@ -2,7 +2,7 @@
 
 **KPR Institute of Engineering and Technology (Autonomous)**  
 Department of Computer Science and Engineering | Academic Year 2026–27  
-**Student Name:** Sathya R V &nbsp;|&nbsp; **Roll No:** 24CS192 &nbsp;|&nbsp; **Class:** III Year, V Semester, Section A
+**Student Name:** Sathya R V &nbsp;|&nbsp; **Roll No:** 24CS192 &nbsp;|&nbsp; **Class:** III Year, V Semester, Section D
 
 ---
 
