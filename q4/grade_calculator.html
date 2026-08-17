@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Grade Calculator | Q4</title>
+  <style>
+    :root {
+      --blue: #1a3a6b;
+      --green: #2e7d32;
+      --red: #c62828;
+      --gold: #f9a825;
+      --bg: #f0f4f8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+    }
+    h1 {
+      color: var(--blue);
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 520px;
+    }
+    .subject-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .subject-label {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #444;
+    }
+    .subject-row input {
+      width: 100px;
+      padding: 10px 12px;
+      border: 1.5px solid #cbd5e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .subject-row input:focus { border-color: var(--blue); }
+    .btn-calc {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      letter-spacing: 0.5px;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.88; }
+    .btn-reset {
+      display: block;
+      width: 100%;
+      padding: 11px;
+      background: #eee;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Result Card */
+    #result {
+      display: none;
+      margin-top: 28px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 520px;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-key { color: #555; font-size: 0.9rem; }
+    .result-val { font-weight: 700; font-size: 1rem; color: var(--blue); }
+
+    .status-pass {
+      background: #e8f5e9;
+      color: var(--green);
+      padding: 3px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .status-fail {
+      background: #ffebee;
+      color: var(--red);
+      padding: 3px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      width: 42px;
+      height: 42px;
+      line-height: 42px;
+      text-align: center;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    .error-msg {
+      color: var(--red);
+      font-size: 0.82rem;
+      margin-top: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎓 Student Grade Calculator</h1>
+  <p class="subtitle">U21CS501 Web Technology — Assignment I, Q4</p>
+
+  <div class="card">
+    <div class="subject-row">
+      <div class="subject-label">📐 Mathematics</div>
+      <input type="number" id="s1" placeholder="0–100" min="0" max="100"/>
+    </div>
+    <div class="subject-row">
+      <div class="subject-label">⚗️ Physics</div>
+      <input type="number" id="s2" placeholder="0–100" min="0" max="100"/>
+    </div>
+    <div class="subject-row">
+      <div class="subject-label">🧪 Chemistry</div>
+      <input type="number" id="s3" placeholder="0–100" min="0" max="100"/>
+    </div>
+    <div class="subject-row">
+      <div class="subject-label">💻 Computer Science</div>
+      <input type="number" id="s4" placeholder="0–100" min="0" max="100"/>
+    </div>
+    <div class="subject-row">
+      <div class="subject-label">🌐 English</div>
+      <input type="number" id="s5" placeholder="0–100" min="0" max="100"/>
+    </div>
+    <p class="error-msg" id="errorMsg">⚠️ Please enter valid marks (0–100) for all subjects.</p>
+    <button class="btn-calc" onclick="calculateGrade()">Calculate Grade</button>
+    <button class="btn-reset" onclick="resetForm()">Reset</button>
+  </div>
+
+  <div id="result">
+    <div class="result-row">
+      <span class="result-key">Total Marks</span>
+      <span class="result-val" id="rTotal"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-key">Maximum Marks</span>
+      <span class="result-val">500</span>
+    </div>
+    <div class="result-row">
+      <span class="result-key">Average / Percentage</span>
+      <span class="result-val" id="rAvg"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-key">Grade</span>
+      <span class="result-val"><span class="grade-badge" id="rGrade"></span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-key">Status</span>
+      <span id="rStatus"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-key">Remark</span>
+      <span class="result-val" id="rRemark" style="color:#555;font-weight:500;font-size:0.88rem;"></span>
+    </div>
+  </div>
+
+  <script>
+    /*
+     * ─────────────────────────────────────────────
+     *  Q4 — JavaScript: Grade Calculator
+     *  Demonstrates:
+     *    ✔ Variables & Data Types (let, const, Number, String, Boolean)
+     *    ✔ Literals (numeric, string, template literals)
+     *    ✔ Operators (arithmetic, comparison, logical)
+     *    ✔ Statements (if-else if-else, for loop)
+     *    ✔ User-defined Functions
+     * ─────────────────────────────────────────────
+     */
+
+    // ── User-defined Function 1: getMarks ──────────────
+    // Reads and returns an array of numeric mark values
+    function getMarks() {
+      // Variables of type Number
+      let m1 = Number(document.getElementById('s1').value);
+      let m2 = Number(document.getElementById('s2').value);
+      let m3 = Number(document.getElementById('s3').value);
+      let m4 = Number(document.getElementById('s4').value);
+      let m5 = Number(document.getElementById('s5').value);
+
+      // Return as an Array literal
+      return [m1, m2, m3, m4, m5];
+    }
+
+    // ── User-defined Function 2: validateMarks ─────────
+    // Checks that all marks are between 0 and 100
+    function validateMarks(marks) {
+      // Iteration: for loop
+      for (let i = 0; i < marks.length; i++) {
+        // Operators: isNaN (logical), comparison operators
+        if (isNaN(marks[i]) || marks[i] < 0 || marks[i] > 100) {
+          return false; // Boolean literal
+        }
+      }
+      return true;
+    }
+
+    // ── User-defined Function 3: computeTotal ──────────
+    // Calculates the sum using a for loop
+    function computeTotal(marks) {
+      let total = 0; // Numeric literal
+      for (let i = 0; i < marks.length; i++) {
+        total += marks[i]; // Arithmetic operator: +=
+      }
+      return total;
+    }
+
+    // ── User-defined Function 4: computeAverage ────────
+    function computeAverage(total, count) {
+      return total / count; // Arithmetic operator: /
+    }
+
+    // ── User-defined Function 5: getGrade ──────────────
+    // Selection statements (if–else if–else)
+    function getGrade(avg) {
+      if (avg >= 90) {          // Comparison operator: >=
+        return 'O';             // String literal — Outstanding
+      } else if (avg >= 80) {
+        return 'A+';            // Excellent
+      } else if (avg >= 70) {
+        return 'A';             // Very Good
+      } else if (avg >= 60) {
+        return 'B+';            // Good
+      } else if (avg >= 50) {
+        return 'B';             // Average
+      } else if (avg >= 40) {
+        return 'C';             // Below Average
+      } else {
+        return 'F';             // Fail
+      }
+    }
+
+    // ── User-defined Function 6: getStatus ─────────────
+    // Returns Pass/Fail; a student must score ≥ 35 in every subject AND avg ≥ 40
+    function getStatus(marks, avg) {
+      let allPassed = true; // Boolean variable
+      for (let i = 0; i < marks.length; i++) {
+        if (marks[i] < 35) {   // Comparison operator
+          allPassed = false;
+          break;                // Statement: break
+        }
+      }
+      // Logical operator: &&
+      return (allPassed && avg >= 40) ? 'Pass' : 'Fail';
+    }
+
+    // ── User-defined Function 7: getRemark ─────────────
+    function getRemark(grade) {
+      // Selection: switch statement
+      switch (grade) {
+        case 'O':  return '🏆 Outstanding performance!';
+        case 'A+': return '⭐ Excellent work!';
+        case 'A':  return '👍 Very good — keep it up!';
+        case 'B+': return '📚 Good effort, aim higher!';
+        case 'B':  return '💪 Average — study smarter!';
+        case 'C':  return '⚠️ Below average — needs improvement.';
+        default:   return '❌ Fail — please reappear in supplementary exam.';
+      }
+    }
+
+    // ── Grade badge colours ─────────────────────────────
+    function gradeColor(grade) {
+      const colors = {
+        'O': '#1565c0', 'A+': '#2e7d32', 'A': '#388e3c',
+        'B+': '#f57f17', 'B': '#e65100', 'C': '#6a1b9a', 'F': '#c62828'
+      };
+      return colors[grade] || '#555';
+    }
+
+    // ── MAIN: calculateGrade ────────────────────────────
+    function calculateGrade() {
+      // Hide previous error
+      document.getElementById('errorMsg').style.display = 'none';
+
+      const marks = getMarks(); // Call user-defined function
+
+      // Validate
+      if (!validateMarks(marks)) {
+        document.getElementById('errorMsg').style.display = 'block';
+        return;
+      }
+
+      const total   = computeTotal(marks);         // Function call
+      const avg     = computeAverage(total, 5);    // Function call
+      const grade   = getGrade(avg);               // Function call
+      const status  = getStatus(marks, avg);       // Function call
+      const remark  = getRemark(grade);            // Function call
+
+      // ── Update DOM with results ──────────────────────
+      document.getElementById('rTotal').textContent = `${total} / 500`;
+      // Template literal (string literal with embedded expressions)
+      document.getElementById('rAvg').textContent   = `${avg.toFixed(2)}%`;
+
+      const gradeEl = document.getElementById('rGrade');
+      gradeEl.textContent = grade;
+      gradeEl.style.background = gradeColor(grade);
+
+      const statusEl = document.getElementById('rStatus');
+      statusEl.innerHTML = status === 'Pass'
+        ? `<span class="status-pass">✅ PASS</span>`
+        : `<span class="status-fail">❌ FAIL</span>`;
+
+      document.getElementById('rRemark').textContent = remark;
+
+      // Show result card
+      const resultEl = document.getElementById('result');
+      resultEl.style.display = 'block';
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ── Reset form ──────────────────────────────────────
+    function resetForm() {
+      ['s1','s2','s3','s4','s5'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('errorMsg').style.display = 'none';
+    }
+  </script>
+
+  <footer style="text-align:center;padding:32px 16px 16px;font-size:0.85rem;color:#718096;margin-top:auto;">
+    <p>U21CS501 Web Technology — Assignment I &nbsp;|&nbsp; KPR Institute of Engineering and Technology &nbsp;|&nbsp; 2026–27</p>
+    <p style="margin-top:6px;font-weight:600;color:var(--blue);">Submitted by: Sathya R V &nbsp;|&nbsp; Roll No: 24CS192</p>
+  </footer>
+
+</body>
+</html>
