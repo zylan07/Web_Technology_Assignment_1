@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Technology Fundamentals | KPR Institute</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0d1b2a;
+      --teal: #0e9aa7;
+      --amber: #f6ae2d;
+      --light: #f4f7fb;
+      --white: #ffffff;
+      --text: #2d3748;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 100%);
+      color: var(--white);
+      padding: 40px 24px 30px;
+      text-align: center;
+    }
+    header .badge {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    header h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; }
+    header p  { opacity: 0.8; margin-top: 8px; font-size: 0.95rem; }
+
+    /* ── Nav Pills ── */
+    nav {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 16px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      justify-content: center;
+    }
+    nav a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a:hover { color: var(--amber); border-color: var(--amber); }
+
+    /* ── Main Layout ── */
+    main { max-width: 1000px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* ── Section Card ── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border-left: 5px solid var(--teal);
+    }
+    .card h2 {
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2 .icon { font-size: 1.6rem; }
+    .card p, .card li { color: #4a5568; margin-bottom: 10px; }
+    .card ul { padding-left: 20px; }
+
+    /* ── Diagram Boxes ── */
+    .diagram {
+      background: #f0f8ff;
+      border: 2px dashed var(--teal);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    /* ── Flow ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+    .flow-box {
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .flow-arrow { color: var(--teal); font-size: 1.4rem; font-weight: 900; }
+
+    /* ── URL Breakdown ── */
+    .url-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 16px 0;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .url-part {
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .u1 { background: #e74c3c; }
+    .u2 { background: #e67e22; }
+    .u3 { background: #27ae60; }
+    .u4 { background: #2980b9; }
+    .u5 { background: #8e44ad; }
+
+    .url-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+    .legend-dot { width: 14px; height: 14px; border-radius: 3px; }
+
+    /* ── Compare Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 0.88rem;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    td { padding: 11px 16px; border-bottom: 1px solid #e2e8f0; }
+    tr:nth-child(even) td { background: #f7fafc; }
+
+    /* ── Network Grid ── */
+    .net-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .net-item {
+      background: linear-gradient(135deg, var(--navy), #1a3a5c);
+      color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(13,27,42,0.15);
+    }
+    .net-item .emoji { font-size: 2rem; margin-bottom: 8px; }
+    .net-item h4 { font-size: 0.95rem; color: var(--amber); margin-bottom: 6px; }
+    .net-item p, .card .net-item p { font-size: 0.83rem; color: #f0f4f8 !important; opacity: 1; margin: 0; line-height: 1.5; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.85rem;
+      color: #718096;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Assignment I — Q1 | U21CS501 Web Technology</span>
+  <h1>🌐 World Wide Web — Fundamental Concepts</h1>
+  <p>KPR Institute of Engineering and Technology &nbsp;|&nbsp; III Year CSE &nbsp;|&nbsp; 2026–27</p>
+</header>
+
+<nav>
+  <a href="#internet">Internet</a>
+  <a href="#network">Networks</a>
+  <a href="#url">URL</a>
+  <a href="#domain">Domain</a>
+  <a href="#browsers">Browsers &amp; Servers</a>
+  <a href="#working">How Websites Work</a>
+  <a href="#scripting">Client vs Server</a>
+</nav>
+
+<main>
+
+  <!-- Q1.1 Internet Overview -->
+  <section class="card" id="internet">
+    <h2><span class="icon">🌍</span> 1. Internet Overview</h2>
+    <p>
+      The <strong>Internet</strong> is a massive global network of interconnected computers that communicate
+      using a standardised suite of protocols — primarily <em>TCP/IP</em>. It began as
+      <strong>ARPANET</strong> (1969), a US defence research project, and evolved into the public
+      commercial network we use today.
+    </p>
+    <p>Key services that run over the Internet:</p>
+    <ul>
+      <li><strong>World Wide Web (WWW)</strong> — hyperlinked documents &amp; web apps</li>
+      <li><strong>Email (SMTP/IMAP)</strong> — electronic messaging</li>
+      <li><strong>FTP</strong> — file transfer between hosts</li>
+      <li><strong>VoIP / Streaming</strong> — real-time audio/video</li>
+    </ul>
+    <div class="diagram">
+      <div class="flow">
+        <div class="flow-box">Your Device</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">ISP (Jio / BSNL)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Backbone Router</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Remote Server</div>
+      </div>
+      <p style="font-size:0.8rem;color:#555;margin-top:8px;">
+        Figure 1 — Data packet journey across the Internet
+      </p>
+    </div>
+  </section>
+
+  <!-- Q1.2 Network Concepts -->
+  <section class="card" id="network">
+    <h2><span class="icon">🔗</span> 2. Fundamental Computer Network Concepts</h2>
+    <div class="net-grid">
+      <div class="net-item">
+        <div class="emoji">📡</div>
+        <h4>Protocol</h4>
+        <p>A set of rules governing data communication. e.g. TCP, UDP, HTTP, FTP.</p>
+      </div>
+      <div class="net-item">
+        <div class="emoji">🔢</div>
+        <h4>IP Address</h4>
+        <p>Unique numerical label assigned to every device on a network (IPv4: 192.168.1.1).</p>
+      </div>
+      <div class="net-item">
+        <div class="emoji">🚪</div>
+        <h4>Port</h4>
+        <p>Logical endpoint for a specific service. HTTP→80, HTTPS→443, FTP→21.</p>
+      </div>
+      <div class="net-item">
+        <div class="emoji">📦</div>
+        <h4>Packet</h4>
+        <p>Small chunk of data transmitted across the network, reassembled at the destination.</p>
+      </div>
+      <div class="net-item">
+        <div class="emoji">🏠</div>
+        <h4>LAN / WAN</h4>
+        <p>Local Area Network (within a building) vs Wide Area Network (across cities/countries).</p>
+      </div>
+      <div class="net-item">
+        <div class="emoji">🔀</div>
+        <h4>Router</h4>
+        <p>Device that forwards packets between networks, choosing the best path.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q1.3 URL -->
+  <section class="card" id="url">
+    <h2><span class="icon">🔗</span> 3. URL and Its Structure</h2>
+    <p>
+      A <strong>Uniform Resource Locator (URL)</strong> is the complete address used to locate a
+      resource on the web. Every URL follows a precise structure:
+    </p>
+    <div class="diagram">
+      <div class="url-strip">
+        <span class="url-part u1">https</span>
+        <span style="font-weight:700;color:#555;">://</span>
+        <span class="url-part u2">www</span>
+        <span style="color:#555;">.</span>
+        <span class="url-part u3">kpriet.ac.in</span>
+        <span class="url-part u4">/admissions</span>
+        <span class="url-part u5">?year=2026</span>
+      </div>
+      <div class="url-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> Protocol</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> Subdomain</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#27ae60"></span> Domain Name</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2980b9"></span> Path</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#8e44ad"></span> Query String</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q1.4 Domain Name -->
+  <section class="card" id="domain">
+    <h2><span class="icon">🏷️</span> 4. Domain Name</h2>
+    <p>
+      A <strong>domain name</strong> is the human-readable alias for an IP address. The
+      <strong>Domain Name System (DNS)</strong> translates names like <code>kpriet.ac.in</code>
+      into numerical IPs like <code>103.21.58.5</code> so browsers know where to connect.
+    </p>
+    <div class="flow" style="margin-top:16px">
+      <div class="flow-box">User types<br>kpriet.ac.in</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">DNS Resolver</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">Returns IP<br>103.21.58.5</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">Browser connects<br>to Server</div>
+    </div>
+    <p style="margin-top:14px">Domain hierarchy: <code>.in</code> (TLD) → <code>ac</code> (SLD) → <code>kpriet</code> (label)</p>
+  </section>
+
+  <!-- Q1.5 Browsers & Servers -->
+  <section class="card" id="browsers">
+    <h2><span class="icon">🌐</span> 5. Web Browsers and Web Servers</h2>
+    <table>
+      <thead>
+        <tr><th>Aspect</th><th>Web Browser</th><th>Web Server</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Definition</td><td>Client-side software to request &amp; render web pages</td><td>Software that stores &amp; serves web content to clients</td></tr>
+        <tr><td>Examples</td><td>Chrome, Firefox, Edge, Safari</td><td>Apache, Nginx, IIS, Node.js (http)</td></tr>
+        <tr><td>Role</td><td>Sends HTTP request, renders HTML/CSS/JS</td><td>Listens on port 80/443, responds with files/data</td></tr>
+        <tr><td>Language</td><td>Interprets HTML, CSS, JavaScript</td><td>Runs PHP, Python, Node, Java, Ruby, etc.</td></tr>
+        <tr><td>Location</td><td>User's local machine</td><td>Remote data centre / cloud</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Q1.6 Working Principle -->
+  <section class="card" id="working">
+    <h2><span class="icon">⚙️</span> 6. Working Principle of a Website</h2>
+    <p>When you visit a website, a precise sequence of steps occurs in milliseconds:</p>
+    <div class="diagram">
+      <div class="flow" style="flex-direction:column;gap:6px">
+        <div class="flow-box" style="width:280px">① Browser sends HTTP GET request</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box" style="width:280px">② DNS resolves domain → IP</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box" style="width:280px">③ TCP handshake (SYN / SYN-ACK / ACK)</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box" style="width:280px">④ Server processes request</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box" style="width:280px">⑤ Server sends HTTP 200 + HTML</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box" style="width:280px">⑥ Browser parses &amp; renders page</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q1.7 Client vs Server Scripting -->
+  <section class="card" id="scripting">
+    <h2><span class="icon">💻</span> 7. Client-side vs Server-side Scripting</h2>
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Client-side Scripting</th><th>Server-side Scripting</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Execution Location</td><td>User's browser</td><td>Web server</td></tr>
+        <tr><td>Languages</td><td>HTML, CSS, JavaScript</td><td>PHP, Python, Node.js, Java, Ruby</td></tr>
+        <tr><td>Speed</td><td>Fast (no server round-trip)</td><td>Depends on network &amp; server load</td></tr>
+        <tr><td>Security</td><td>Code visible to user</td><td>Code hidden from user</td></tr>
+        <tr><td>Database Access</td><td>Not directly</td><td>Yes (MySQL, PostgreSQL, MongoDB)</td></tr>
+        <tr><td>Use Case</td><td>UI interaction, form validation, animations</td><td>Authentication, data processing, CMS</td></tr>
+        <tr><td>Examples</td><td>React, Vue, jQuery</td><td>Django, Laravel, Express.js</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <p>U21CS501 Web Technology — Assignment I &nbsp;|&nbsp; KPR Institute of Engineering and Technology &nbsp;|&nbsp; 2026–27</p>
+  <p style="margin-top:6px;font-weight:600;color:#2d3748;">Submitted by: Sathya R V &nbsp;|&nbsp; Roll No: 24CS192</p>
+</footer>
+
+</body>
+</html>
